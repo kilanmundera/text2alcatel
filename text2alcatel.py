@@ -6,19 +6,15 @@ import sys
 import venv
 from TTS.api import TTS
 
-def setup_virtual_env(env_dir):
-    if not os.path.exists(env_dir):
-        print("Création de l'environnement virtuel...")
-        venv.create(env_dir, with_pip=True)
-        subprocess.run([os.path.join(env_dir, "bin", "pip"), "install", "coqui-tts", "ffmpeg-python"], check=True)
 
 def text_to_speech(text, output_path, model_name, language_idx, speaker_idx):
+    
     tts = TTS(model_name=model_name)
     tts.tts_to_file(text=text, file_path=output_path, language=language_idx, speaker=speaker_idx)
 
 def convert_audio(input_file, output_file):
     ffmpeg_cmd = [
-        "ffmpeg", "-y", "-i", input_file,
+        "ffmpeg","-hide_banner", "-loglevel", "error", "-y", "-i", input_file,
         "-ar", "8000", "-ac", "1", "-c:a", "pcm_alaw",
         output_file
     ]
@@ -36,17 +32,40 @@ def process_csv_file(input_csv_file, output_base_folder, model_name, speaker_idx
             if not filename or not text or not language_idx:
                 print(f"Ligne incomplète ignorée : {row}")
                 continue
-
+            
+            checkpoint_folder = os.path.join(output_base_folder, "checkpoints")
+            os.makedirs(checkpoint_folder, exist_ok=True)
+            
             output_folder = os.path.join(output_base_folder, language_idx)
             os.makedirs(output_folder, exist_ok=True)
 
+            checkpoint_output = os.path.join(checkpoint_folder, f"{filename}.checkpoint")
             tts_output = os.path.join(output_folder, f"{filename}_temp.wav")
             final_output = os.path.join(output_folder, f"{filename}.wav")
-
-            print(f"[{language_idx}] Génération de : {final_output}")
-            text_to_speech(text, tts_output, model_name, language_idx, speaker_idx)
-            convert_audio(tts_output, final_output)
-            os.remove(tts_output)
+            
+            if os.path.isfile(checkpoint_output) and os.path.isfile(final_output):
+                with open(checkpoint_output) as f:
+                    checkpoint = f.read()
+                if checkpoint == text:
+                    print(f"[{language_idx} - {filename}] : Ce message a déjà été généré")                    
+                else:
+                    print(f"[{language_idx} - {filename}] Génération de : {final_output}")
+                    text_to_speech(text, tts_output, model_name, language_idx, speaker_idx)            
+                    print(f"[{language_idx} - {filename}] Inscription du checkpoint")
+                    convert_audio(tts_output, final_output)
+                    with open(checkpoint_output, 'w') as checkpoint:
+                        checkpoint.write(text)
+                    os.remove(tts_output)
+            else:
+                print(f"[{language_idx} - {filename}] : Génération du message : {final_output}")
+                text_to_speech(text, tts_output, model_name, language_idx, speaker_idx)
+                print(f"[{language_idx} - {filename}] Inscription du checkpoint")
+                convert_audio(tts_output, final_output)
+                with open(checkpoint_output, 'w') as checkpoint:
+                    checkpoint.write(text)
+                os.remove(tts_output)        
+                
+                
 
 def list_available_models():
 #    print("Modèles disponibles :", TTS.list_models())
@@ -110,4 +129,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
