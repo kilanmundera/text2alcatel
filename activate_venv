@@ -1,0 +1,6 @@
+#!/bin/bash
+python3 -m venv ./venv_coqui
+source venv_coqui/bin/activate
+#python3 -m pip install  coqui-tts ffmpeg-python
+python3 -m pip install -r requirements.txt
+
