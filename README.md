@@ -8,6 +8,7 @@ A Python tool to generate audio files from a CSV list of text entries using [Coq
 
 - Prepare a `csv` file containing multilingual text entries for the vocal messages you would like to generate and give it to `text2alcatel`
 - `text2alcatel` will then generate `.wav` files, using [Coqui TTS](https://github.com/coqui-ai/TTS) and convert them to the appropriate format for Alcatel telephony servers (mono, 8kHz, A-Law codec).
+- `text2alcatel` uses a checkpoint system in order not to generate a message that has already been generated.
 - Supports models, speaker and language ID selection.
 
 ---
