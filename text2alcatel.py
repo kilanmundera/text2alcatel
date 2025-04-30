@@ -50,15 +50,15 @@ def process_csv_file(input_csv_file, output_base_folder, model_name, speaker_idx
                 else:
                     print(f"[{language_idx} - {filename}] Génération de : {final_output}")
                     text_to_speech(text, tts_output, model_name, language_idx, speaker_idx)            
-                    print(f"[{language_idx} - {filename}] Inscription du checkpoint")
+                    print(f"[{language_idx} - {filename}] : Inscription du checkpoint")
                     convert_audio(tts_output, final_output)
                     with open(checkpoint_output, 'w') as checkpoint:
                         checkpoint.write(text)
                     os.remove(tts_output)
             else:
-                print(f"[{language_idx} - {filename}] : Génération du message : {final_output}")
+                print(f"[{language_idx} - {filename}] : Génération de : {final_output}")
                 text_to_speech(text, tts_output, model_name, language_idx, speaker_idx)
-                print(f"[{language_idx} - {filename}] Inscription du checkpoint")
+                print(f"[{language_idx} - {filename}] : Inscription du checkpoint")
                 convert_audio(tts_output, final_output)
                 with open(checkpoint_output, 'w') as checkpoint:
                     checkpoint.write(text)
