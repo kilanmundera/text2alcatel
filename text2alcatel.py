@@ -7,8 +7,7 @@ import venv
 from TTS.api import TTS
 
 
-def text_to_speech(text, output_path, model_name, language_idx, speaker_idx):
-    
+def text_to_speech(text, output_path, model_name, language_idx, speaker_idx): 
     tts = TTS(model_name=model_name)
     tts.tts_to_file(text=text, file_path=output_path, language=language_idx, speaker=speaker_idx)
 
@@ -123,8 +122,6 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-#    env_dir = "venv_coqui"
-#    setup_virtual_env(env_dir)
     process_csv_file(args.input_csv, args.output_folder, args.model_name, args.speaker_idx)
 
 if __name__ == "__main__":
