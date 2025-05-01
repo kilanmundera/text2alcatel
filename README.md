@@ -85,6 +85,6 @@ deactivate
 
 
 ## To do :
-* Implement an _already done_ system for the messages that have already be generated
+* ~~Implement an _already done_ system for the messages that have already be generated~~
 * Translate the comments and options to english
 
